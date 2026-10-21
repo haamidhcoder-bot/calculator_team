@@ -3,10 +3,19 @@ const buttons = document.querySelectorAll("button");
 let justCalculated = false;
 
 function appendValue(value) {
-    if (display.value === "Error" || justCalculated) {
+    if (display.value === "Error") {
         display.value = "";
-        justCalculated = false;
     }
+
+    // If result is shown and user presses a number,
+    // start new calculation
+    if (justCalculated && /[0-9.]/.test(value)) {
+        display.value = "";
+    }
+
+    // If result is shown and user presses an operator,
+    // continue calculation using result as n1
+    justCalculated = false;
     display.value += value;
 }
 
