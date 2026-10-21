@@ -8,11 +8,14 @@ app = Flask(__name__)
 
 def calculate_expression(expression:str):
     import sys
+    global err
+    err = 1
     try:
        value = eval(expression)
     except Exception as e:
-       return "Calculation Error:"+str(e)
-    return value
+       err = 0
+       return err,e
+    return err,value
 
 @app.get("/")
 def index():
@@ -24,7 +27,11 @@ def api_calculate():
     data = request.get_json(silent=True) or {}
     expression = data.get("expression", "")
     try:
-        return jsonify({"result": calculate_expression(expression)})
+        error_code,answer = calculate_expression(expression)
+        if error_code!=0:
+            return jsonify({"result": answer})
+        else:
+            return jsonify({"error": str(answer)}), 400
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
 
